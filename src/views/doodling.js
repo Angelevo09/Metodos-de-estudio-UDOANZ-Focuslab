@@ -1,12 +1,20 @@
 import mammoth from 'mammoth';
 
+/**
+ * nombre de la funcion: renderDoodling
+ * parametros: container (Tipo: HTMLElement) - Nodo contenedor principal del DOM, user (Tipo: object|null) - Información del usuario actual o null si es invitado, onBack (Tipo: function) - Función de retorno a la pantalla previa.
+ * retorno: function - Función de limpieza (cleanup) que libera URLs creadas con Blob y remueve oyentes de eventos al salir de la vista.
+ * funcionalidad: Renderiza y gestiona el entorno de estudio Doodling & Lectura Visual en pantalla dividida: visor nativo de PDF y procesador de documentos Word (.docx con Mammoth.js) a la izquierda, combinado con un lienzo libre (HTML5 Canvas 2D) a la derecha con selección de paletas cromáticas, grosor de trazo, borrador y exportación a imagen PNG.
+ */
 export function renderDoodling(container, user, onBack) {
+  // Variables de control de estado del visor y del lienzo
   let currentPdfUrl = null;
   let isDrawing = false;
   let isEraser = false;
   let brushColor = '#2e4957';
   let brushSize = 3;
 
+  // Renderizado estructural del visor de documentos y panel de lienzo interactivo
   container.innerHTML = `
     <div class="method-workspace" style="max-width: 1360px;">
       <div class="workspace-topbar">
@@ -78,13 +86,14 @@ export function renderDoodling(container, user, onBack) {
   const fileNameBadge = document.getElementById('doodle-file-name');
   const viewerBody = document.getElementById('doc-viewer-body');
 
+  // Procesamiento y visualización de archivos cargados (.pdf o .docx)
   fileInput.addEventListener('change', async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     fileNameBadge.textContent = file.name;
 
-    // Liberar URL anterior si existía
+    // Liberación de memoria de URL Blob previa si existiese
     if (currentPdfUrl) {
       URL.revokeObjectURL(currentPdfUrl);
       currentPdfUrl = null;
@@ -92,12 +101,14 @@ export function renderDoodling(container, user, onBack) {
 
     const fileNameLower = file.name.toLowerCase();
 
+    // Renderizado nativo de PDF mediante iframe
     if (file.type === 'application/pdf' || fileNameLower.endsWith('.pdf')) {
       currentPdfUrl = URL.createObjectURL(file);
       viewerBody.innerHTML = `<iframe class="pdf-frame" src="${currentPdfUrl}" title="Visor PDF"></iframe>`;
       return;
     }
 
+    // Conversión de Word .docx a HTML usando mammoth.js
     if (fileNameLower.endsWith('.docx')) {
       viewerBody.innerHTML = `<div class="doc-placeholder"><p>Procesando documento Word...</p></div>`;
       try {
@@ -125,11 +136,23 @@ export function renderDoodling(container, user, onBack) {
   const canvas = document.getElementById('doodle-canvas');
   const ctx = canvas.getContext('2d');
 
+  /**
+   * nombre de la funcion: fillWhiteBackground
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Rellena todo el lienzo con un fondo blanco sólido para asegurar contraste visual y exportaciones limpias a imagen.
+   */
   function fillWhiteBackground() {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
+  /**
+   * nombre de la funcion: resizeCanvas
+   * parametros: preserveDrawing (Tipo: boolean, default: true) - Indica si se debe preservar el dibujo existente al redimensionar.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Adapta el tamaño del canvas al contenedor manteniendo la resolución exacta y salvaguardando los trazos hechos previamente.
+   */
   function resizeCanvas(preserveDrawing = true) {
     const rect = wrapper.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
@@ -151,12 +174,18 @@ export function renderDoodling(container, user, onBack) {
     }
   }
 
-  // Inicializar dimensiones del canvas
+  // Inicialización de dimensiones del lienzo tras montaje en el DOM
   requestAnimationFrame(() => resizeCanvas(false));
 
   const onWindowResize = () => resizeCanvas(true);
   window.addEventListener('resize', onWindowResize);
 
+  /**
+   * nombre de la funcion: getPointerPos
+   * parametros: e (Tipo: PointerEvent) - Evento de puntero generado por ratón, lápiz óptico o pantalla táctil.
+   * retorno: {x: number, y: number} - Coordenadas relativas dentro del área del canvas.
+   * funcionalidad: Calcula las coordenadas precisas del puntero compensando el desfase respecto a la posición del canvas en la ventana.
+   */
   function getPointerPos(e) {
     const rect = canvas.getBoundingClientRect();
     return {
@@ -165,6 +194,7 @@ export function renderDoodling(container, user, onBack) {
     };
   }
 
+  // Inicio de trazo en el lienzo
   canvas.addEventListener('pointerdown', (e) => {
     isDrawing = true;
     canvas.setPointerCapture(e.pointerId);
@@ -173,6 +203,7 @@ export function renderDoodling(container, user, onBack) {
     ctx.moveTo(x, y);
   });
 
+  // Movimiento y trazado en tiempo real
   canvas.addEventListener('pointermove', (e) => {
     if (!isDrawing) return;
     const { x, y } = getPointerPos(e);
@@ -184,6 +215,12 @@ export function renderDoodling(container, user, onBack) {
     ctx.stroke();
   });
 
+  /**
+   * nombre de la funcion: stopDrawing
+   * parametros: e (Tipo: PointerEvent) - Evento de puntero liberado o cancelado.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Finaliza el trazo actual y libera la captura del puntero en el canvas.
+   */
   const stopDrawing = (e) => {
     if (!isDrawing) return;
     isDrawing = false;
@@ -196,18 +233,25 @@ export function renderDoodling(container, user, onBack) {
   canvas.addEventListener('pointerup', stopDrawing);
   canvas.addEventListener('pointercancel', stopDrawing);
 
-  // Controles de herramientas
+  // Controles de barra de herramientas del lienzo
   const swatches = container.querySelectorAll('.color-swatch');
   const colorPicker = document.getElementById('doodle-color-picker');
   const penBtn = document.getElementById('tool-pen');
   const eraserBtn = document.getElementById('tool-eraser');
 
+  /**
+   * nombre de la funcion: activatePen
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Cambia el modo activo a lápiz/pincel, desactivando el borrador y actualizando las clases visuales de los botones.
+   */
   function activatePen() {
     isEraser = false;
     penBtn.classList.add('active');
     eraserBtn.classList.remove('active');
   }
 
+  // Selección de colores rápidos mediante muestras
   swatches.forEach(swatch => {
     swatch.onclick = () => {
       swatches.forEach(s => s.classList.remove('active'));
@@ -218,12 +262,14 @@ export function renderDoodling(container, user, onBack) {
     };
   });
 
+  // Selección de color mediante selector nativo
   colorPicker.oninput = (e) => {
     swatches.forEach(s => s.classList.remove('active'));
     brushColor = e.target.value;
     activatePen();
   };
 
+  // Ajuste de calibre/grosor del trazo
   document.getElementById('doodle-size').oninput = (e) => {
     brushSize = Number(e.target.value);
   };
@@ -236,12 +282,14 @@ export function renderDoodling(container, user, onBack) {
     penBtn.classList.remove('active');
   };
 
+  // Acción para blanquear el lienzo
   document.getElementById('tool-clear').onclick = () => {
     if (confirm('¿Limpiar todo el lienzo de dibujo?')) {
       fillWhiteBackground();
     }
   };
 
+  // Exportación del boceto a archivo PNG
   document.getElementById('tool-export').onclick = () => {
     const dataUrl = canvas.toDataURL('image/png');
     const a = document.createElement('a');
@@ -250,7 +298,12 @@ export function renderDoodling(container, user, onBack) {
     a.click();
   };
 
-  // Limpieza al salir de la pantalla
+  /**
+   * nombre de la funcion: cleanup
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Remueve los escuchadores globales de ventana y revoca los recursos temporales creados para visualización de PDF.
+   */
   const cleanup = () => {
     window.removeEventListener('resize', onWindowResize);
     if (currentPdfUrl) {

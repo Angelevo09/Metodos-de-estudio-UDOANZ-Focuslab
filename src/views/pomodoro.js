@@ -1,9 +1,15 @@
 import { getUserData, saveUserData } from '../services/storage.js';
 
+// Duraciones de tiempo predeterminadas para los bloques en segundos
 const STUDY_SECONDS = 25 * 60;
 const BREAK_SECONDS = 5 * 60;
 
-// Genera un sonido de campana suave usando Web Audio API (sin archivos externos)
+/**
+ * nombre de la funcion: playBellSound
+ * parametros: Ninguno.
+ * retorno: void (Sin retorno).
+ * funcionalidad: Genera una notificación sonora suave simulando una campana utilizando la Web Audio API nativa del navegador, sin dependencias ni archivos externos, para alertar el término de cada ciclo.
+ */
 function playBellSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -19,29 +25,44 @@ function playBellSound() {
     osc.start();
     osc.stop(ctx.currentTime + 1.2);
   } catch {
-    // Ignorar si el navegador bloquea el audio automático
+    // Manejo silencioso en caso de que las políticas de autoplay del navegador restrinjan el audio
   }
 }
 
+/**
+ * nombre de la funcion: formatTime
+ * parametros: totalSeconds (Tipo: number) - Cantidad total de segundos transcurridos o restantes.
+ * retorno: string - Cadena formateada en minutos y segundos ("MM:SS").
+ * funcionalidad: Transforma un valor numérico expresado en segundos en una representación cronométrica legible con relleno de dos dígitos por segmento.
+ */
 function formatTime(totalSeconds) {
   const mins = Math.floor(totalSeconds / 60);
   const secs = totalSeconds % 60;
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 }
 
+/**
+ * nombre de la funcion: renderPomodoro
+ * parametros: container (Tipo: HTMLElement) - Contenedor raíz donde se montará la vista, user (Tipo: object|null) - Objeto de usuario autenticado o null en modo invitado, onBack (Tipo: function) - Callback de navegación hacia atrás.
+ * retorno: function - Función de limpieza (cleanup) que detiene temporizadores en curso y restablece el título de la página al salir de la pantalla.
+ * funcionalidad: Renderiza y administra el espacio de trabajo del Método Pomodoro: reloj de estudio/descanso con Web Audio API, libreta lateral con autoguardado en localStorage particionado por usuario, gestión de bitácoras y exportación a archivo .txt.
+ */
 export function renderPomodoro(container, user, onBack) {
+  // Identificador de usuario para particionar los registros en localStorage
   const userId = user?.id || 'invitado';
   let userData = getUserData(userId);
 
-  // Asegurar estructura de borrador activo
+  // Verificación y preparación de la estructura del borrador activo
   if (!userData.pomodoro.activeDraft) {
     userData.pomodoro.activeDraft = { title: '', content: '' };
   }
 
+  // Estados locales para el control del cronómetro y ciclos
   let mode = 'study'; // 'study' | 'break'
   let timeLeft = STUDY_SECONDS;
   let timerId = null;
 
+  // Inyección de la plantilla estructural de Pomodoro (reloj + libreta lateral)
   container.innerHTML = `
     <div class="method-workspace">
       <div class="workspace-topbar">
@@ -107,7 +128,7 @@ export function renderPomodoro(container, user, onBack) {
     </div>
   `;
 
-  // Referencias al DOM
+  // Captura de elementos interactivos del DOM
   const clockEl = document.getElementById('pomo-clock');
   const statusEl = document.getElementById('pomo-status');
   const startBtn = document.getElementById('pomo-start');
@@ -121,11 +142,23 @@ export function renderPomodoro(container, user, onBack) {
   const saveStatusEl = document.getElementById('pomo-save-status');
   const savedListEl = document.getElementById('pomo-saved-list');
 
+  /**
+   * nombre de la funcion: updateClockUI
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Refresca en la interfaz el cronómetro con el tiempo restante actual y sincroniza el título de la pestaña del navegador.
+   */
   function updateClockUI() {
     clockEl.textContent = formatTime(timeLeft);
     document.title = `${formatTime(timeLeft)} - FocusLab`;
   }
 
+  /**
+   * nombre de la funcion: stopTimer
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Detiene el intervalo de cuenta regresiva activo y actualiza el estado habilitado/deshabilitado de los botones de control.
+   */
   function stopTimer() {
     if (timerId) {
       clearInterval(timerId);
@@ -135,6 +168,12 @@ export function renderPomodoro(container, user, onBack) {
     pauseBtn.disabled = true;
   }
 
+  /**
+   * nombre de la funcion: switchMode
+   * parametros: newMode (Tipo: string) - Modo de operación seleccionado ('study' o 'break').
+   * retorno: void (Sin retorno).
+   * funcionalidad: Cambia el temporizador entre el bloque de estudio (25 minutos) y el bloque de descanso (5 minutos), reiniciando el cronómetro y actualizando las etiquetas visuales.
+   */
   function switchMode(newMode) {
     stopTimer();
     mode = newMode;
@@ -146,6 +185,12 @@ export function renderPomodoro(container, user, onBack) {
     updateClockUI();
   }
 
+  /**
+   * nombre de la funcion: startTimer
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Inicia el temporizador de cuenta regresiva por segundo, gestionando el paso de ciclos de estudio/descanso, la reproducción de alertas de sonido y el incremento del récord de sesiones en localStorage.
+   */
   function startTimer() {
     if (timerId) return;
     startBtn.disabled = true;
@@ -162,6 +207,7 @@ export function renderPomodoro(container, user, onBack) {
         stopTimer();
         playBellSound();
 
+        // Incremento de sesiones completadas si se finalizó un bloque de concentración
         if (mode === 'study') {
           userData.pomodoro.completedSessions += 1;
           saveUserData(userId, userData);
@@ -176,7 +222,7 @@ export function renderPomodoro(container, user, onBack) {
     }, 1000);
   }
 
-  // Eventos del Temporizador
+  // Asignación de manejadores de eventos a los controles del temporizador
   startBtn.onclick = startTimer;
   pauseBtn.onclick = () => {
     stopTimer();
@@ -187,7 +233,12 @@ export function renderPomodoro(container, user, onBack) {
     tab.onclick = () => switchMode(tab.dataset.mode);
   });
 
-  // Autoguardado en localStorage al escribir
+  /**
+   * nombre de la funcion: persistDraft
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Guarda de manera asíncrona en localStorage el borrador activo del título y contenido que el usuario está escribiendo.
+   */
   function persistDraft() {
     userData.pomodoro.activeDraft = {
       title: titleInput.value,
@@ -197,6 +248,7 @@ export function renderPomodoro(container, user, onBack) {
     saveStatusEl.textContent = 'Guardado ✓';
   }
 
+  // Oyentes de entrada de texto para autoguardado en tiempo real
   titleInput.addEventListener('input', () => {
     saveStatusEl.textContent = 'Guardando...';
     persistDraft();
@@ -207,7 +259,12 @@ export function renderPomodoro(container, user, onBack) {
     persistDraft();
   });
 
-  // Renderizar lista de notas archivadas
+  /**
+   * nombre de la funcion: renderSavedNotes
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Construye y actualiza la lista visual de notas archivadas en la bitácora histórica, configurando las acciones de recarga en el editor y de eliminación.
+   */
   function renderSavedNotes() {
     const notes = userData.pomodoro.notes;
     container.querySelector('.saved-notes-box h4').textContent = `Bitácora guardada (${notes.length})`;
@@ -217,6 +274,7 @@ export function renderPomodoro(container, user, onBack) {
       return;
     }
 
+    // Mapeo dinámico de notas guardadas
     savedListEl.innerHTML = notes.map(note => `
       <li class="saved-note-item">
         <div class="saved-note-info" data-load-id="${note.id}" title="Clic para cargar en el editor">
@@ -226,6 +284,7 @@ export function renderPomodoro(container, user, onBack) {
       </li>
     `).join('');
 
+    // Manejador para recargar una nota archivada en el editor
     savedListEl.querySelectorAll('[data-load-id]').forEach(el => {
       el.onclick = () => {
         const found = userData.pomodoro.notes.find(n => n.id === el.dataset.loadId);
@@ -237,6 +296,7 @@ export function renderPomodoro(container, user, onBack) {
       };
     });
 
+    // Manejador para eliminar una nota archivada
     savedListEl.querySelectorAll('[data-del-id]').forEach(btn => {
       btn.onclick = () => {
         userData.pomodoro.notes = userData.pomodoro.notes.filter(n => n.id !== btn.dataset.delId);
@@ -246,7 +306,7 @@ export function renderPomodoro(container, user, onBack) {
     });
   }
 
-  // Guardar en bitácora
+  // Manejador de evento para archivar una nueva entrada en la bitácora
   document.getElementById('pomo-save-log').onclick = () => {
     const content = contentInput.value.trim();
     if (!content) {
@@ -265,7 +325,7 @@ export function renderPomodoro(container, user, onBack) {
     saveStatusEl.textContent = 'Archivada en bitácora ✓';
   };
 
-  // Exportar nota a archivo .txt
+  // Manejador de evento para exportar los apuntes a archivo descargable (.txt)
   document.getElementById('pomo-export').onclick = () => {
     const title = titleInput.value.trim() || 'Notas_Pomodoro';
     const content = contentInput.value;
@@ -288,14 +348,21 @@ export function renderPomodoro(container, user, onBack) {
     URL.revokeObjectURL(url);
   };
 
+  // Render inicial de las notas guardadas
   renderSavedNotes();
 
-  // Limpieza al salir de la pantalla
+  /**
+   * nombre de la funcion: cleanup
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Limpia los timers en ejecución y restaura el título original de la pestaña del navegador al desmontar la pantalla.
+   */
   const cleanup = () => {
     stopTimer();
     document.title = 'FocusLab - Métodos de Estudio';
   };
 
+  // Evento de regreso hacia la vista principal
   document.getElementById('pomo-back').onclick = () => {
     cleanup();
     onBack();

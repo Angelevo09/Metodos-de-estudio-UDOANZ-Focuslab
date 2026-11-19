@@ -160,95 +160,186 @@ body {
 
 /* Landing Hero y Tarjetas */
 .container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem;
+  padding: 2.5rem 1.5rem 4rem;
 }
 
 .hero {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.8rem;
+  padding: 0.5rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.hero h1 {
-  font-size: 2.4rem;
+.hero-title {
+  font-size: 3.1rem;
+  font-weight: 800;
   color: var(--color-900);
-  margin-bottom: 0.4rem;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  margin-bottom: 0.85rem;
 }
 
-.hero p {
-  color: var(--text-muted);
-  font-size: 1.1rem;
+.hero-gradient-text {
+  background: linear-gradient(135deg, #2e4957 0%, #4a6675 45%, #1e5aa8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  color: var(--color-700);
+  font-size: 1.12rem;
+  line-height: 1.6;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.hero-subtitle-hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+  color: var(--color-500);
+  font-weight: 600;
+}
+
+.hero-decoration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 1.4rem;
+}
+
+.hero-line {
+  width: 50px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-300), transparent);
+}
+
+.hero-star {
+  color: var(--color-400);
+  font-size: 0.85rem;
 }
 
 .methods-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  align-items: stretch;
 }
 
 .method-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  gap: 1.5rem;
-  align-items: center;
-  box-shadow: 0 4px 12px rgba(46, 73, 87, 0.06);
-}
-
-.method-logo {
-  width: 160px;
-  height: 160px;
-  background-color: var(--bg-card-accent);
-  border-radius: var(--radius-sm);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-800);
-  font-weight: 700;
-  font-size: 2.5rem;
+  box-shadow: 0 4px 16px rgba(46, 73, 87, 0.07);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-.method-logo span {
-  font-size: 0.8rem;
-  margin-top: 0.4rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.method-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(46, 73, 87, 0.15);
+  border-color: var(--color-300);
+}
+
+.method-card-media {
+  position: relative;
+  margin: 1.25rem 1.25rem 0.25rem 1.25rem;
+  height: 230px;
+  background-color: #f0f7f9;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0.75rem;
+}
+
+.method-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.method-card:hover .method-card-img {
+  transform: scale(1.04);
 }
 
 .method-info {
+  padding: 1.25rem 1.25rem 1.5rem 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  flex-grow: 1;
+  gap: 0.75rem;
 }
 
-.method-info h2 {
-  font-size: 1.4rem;
+.method-meta {
+  display: flex;
+  align-items: center;
+}
+
+.method-card-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--color-100);
   color: var(--color-900);
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid var(--color-200);
+}
+
+.method-header h2 {
+  font-size: 1.35rem;
+  color: var(--color-900);
+  font-weight: 700;
 }
 
 .method-desc {
   color: var(--text-main);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
 }
 
 .method-benefits {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
   background-color: var(--bg-page);
-  padding: 0.6rem 0.9rem;
+  padding: 0.75rem 0.9rem;
   border-radius: var(--radius-sm);
   border-left: 3px solid var(--color-500);
 }
 
+.benefits-label {
+  font-weight: 700;
+  color: var(--color-700);
+  margin-right: 0.25rem;
+}
+
 .method-actions {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+}
+
+.select-method-btn {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  text-align: center;
 }
 
 /* Modal de Autenticación */
@@ -317,11 +408,18 @@ body {
 }
 
 @media (max-width: 680px) {
-  .method-card {
-    grid-template-columns: 1fr;
+  .hero-title {
+    font-size: 2.3rem;
   }
-  .method-logo {
-    width: 100%;
-    height: 100px;
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  .methods-list {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .method-card-media {
+    height: 200px;
+    margin: 1rem 1rem 0.25rem 1rem;
   }
 }

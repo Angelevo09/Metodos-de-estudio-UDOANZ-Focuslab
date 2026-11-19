@@ -1,5 +1,11 @@
 import { getUserData, saveUserData } from '../services/storage.js';
 
+/**
+ * nombre de la funcion: escapeHtml
+ * parametros: str (Tipo: string) - Cadena de texto a sanitizar.
+ * retorno: string - Cadena de texto con entidades HTML escapadas (&, <, >, ").
+ * funcionalidad: Previene errores de parseo o inyecciones de código HTML al insertar valores de texto dentro de atributos o plantillas del DOM.
+ */
 function escapeHtml(str = '') {
   return str
     .replace(/&/g, '&amp;')
@@ -8,18 +14,33 @@ function escapeHtml(str = '') {
     .replace(/"/g, '&quot;');
 }
 
+/**
+ * nombre de la funcion: getTodayISO
+ * parametros: Ninguno.
+ * retorno: string - Fecha actual formateada en estándar internacional "YYYY-MM-DD".
+ * funcionalidad: Obtiene la fecha del sistema en formato ISO para inicializar controles de entrada de tipo fecha (<input type="date">).
+ */
 function getTodayISO() {
   return new Date().toISOString().split('T')[0];
 }
 
+/**
+ * nombre de la funcion: renderCornell
+ * parametros: container (Tipo: HTMLElement) - Nodo contenedor donde se renderizará la vista, user (Tipo: object|null) - Objeto de usuario autenticado o null si está en modo invitado, onBack (Tipo: function) - Callback invocado para regresar a la vista principal.
+ * retorno: void (Sin retorno).
+ * funcionalidad: Renderiza la interfaz interactiva del Método Cornell: estructura clásica dividida en palabras clave/preguntas (30%), notas de desarrollo (70%) y bloque inferior de síntesis/resumen; persistencia reactiva en localStorage, gestión de fichas guardadas y exportación a formatos PDF y .txt.
+ */
 export function renderCornell(container, user, onBack) {
+  // Determinación de la clave de almacenamiento según la sesión
   const userId = user?.id || 'invitado';
   let userData = getUserData(userId);
 
+  // Asegura la consistencia del listado de fichas
   if (!Array.isArray(userData.cornell)) {
     userData.cornell = [];
   }
 
+  // Inicialización de la estructura del borrador activo en caso de no existir
   if (!userData.cornellDraft) {
     userData.cornellDraft = {
       id: null,
@@ -33,6 +54,7 @@ export function renderCornell(container, user, onBack) {
 
   const draft = userData.cornellDraft;
 
+  // Inyección de la plantilla estructural de la ficha Cornell y barras de herramientas
   container.innerHTML = `
     <div class="method-workspace">
       <div class="workspace-topbar">
@@ -117,7 +139,7 @@ export function renderCornell(container, user, onBack) {
     </div>
   `;
 
-  // Referencias DOM
+  // Referencias a los elementos del DOM
   const statusEl = document.getElementById('cornell-status');
   const selectEl = document.getElementById('cornell-saved-select');
   const deleteBtn = document.getElementById('cornell-delete');
@@ -128,6 +150,12 @@ export function renderCornell(container, user, onBack) {
   const notesInput = document.getElementById('cornell-notes');
   const summaryInput = document.getElementById('cornell-summary');
 
+  /**
+   * nombre de la funcion: syncDraftToStorage
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Sincroniza en tiempo real los valores de los campos de la ficha activa directamente en el almacenamiento local del navegador.
+   */
   function syncDraftToStorage() {
     userData.cornellDraft = {
       id: userData.cornellDraft.id || null,
@@ -141,6 +169,12 @@ export function renderCornell(container, user, onBack) {
     statusEl.textContent = 'Borrador guardado automáticamente ✓';
   }
 
+  /**
+   * nombre de la funcion: populateSavedSelect
+   * parametros: Ninguno.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Rellena el menú desplegable con el catálogo de fichas guardadas históricamente por el usuario y alterna la visibilidad del botón de eliminar según proceda.
+   */
   function populateSavedSelect() {
     const sheets = userData.cornell;
     const currentId = userData.cornellDraft.id;
@@ -155,6 +189,12 @@ export function renderCornell(container, user, onBack) {
     deleteBtn.classList.toggle('hidden', !currentId);
   }
 
+  /**
+   * nombre de la funcion: loadSheetIntoForm
+   * parametros: sheet (Tipo: object) - Objeto con los datos de una ficha de estudio Cornell.
+   * retorno: void (Sin retorno).
+   * funcionalidad: Carga en los campos de entrada de la interfaz los datos de una ficha seleccionada y actualiza el estado activo del borrador.
+   */
   function loadSheetIntoForm(sheet) {
     topicInput.value = sheet.topic || '';
     dateInput.value = sheet.date || getTodayISO();
@@ -166,12 +206,12 @@ export function renderCornell(container, user, onBack) {
     populateSavedSelect();
   }
 
-  // Autoguardado al escribir
+  // Oyentes de eventos para autoguardado de borrador al escribir
   [topicInput, dateInput, cuesInput, notesInput, summaryInput].forEach(el => {
     el.addEventListener('input', syncDraftToStorage);
   });
 
-  // Cambiar ficha desde el selector
+  // Manejador de evento al cambiar de ficha en el selector desplegable
   selectEl.onchange = () => {
     const selectedId = selectEl.value;
     if (!selectedId) {
@@ -187,7 +227,7 @@ export function renderCornell(container, user, onBack) {
     }
   };
 
-  // Nueva ficha en blanco
+  // Manejador para reiniciar el formulario con una ficha en blanco
   document.getElementById('cornell-new').onclick = () => {
     loadSheetIntoForm({
       id: null,
@@ -200,7 +240,7 @@ export function renderCornell(container, user, onBack) {
     statusEl.textContent = 'Nueva ficha lista';
   };
 
-  // Guardar ficha en el historial de localStorage
+  // Manejador para persistir formalmente la ficha en el historial
   document.getElementById('cornell-save').onclick = () => {
     const topic = topicInput.value.trim();
     if (!topic && !notesInput.value.trim()) {
@@ -235,7 +275,7 @@ export function renderCornell(container, user, onBack) {
     statusEl.textContent = 'Ficha guardada en historial ✓';
   };
 
-  // Eliminar ficha guardada seleccionada
+  // Manejador para eliminar la ficha seleccionada actualmente
   deleteBtn.onclick = () => {
     const currentId = userData.cornellDraft.id;
     if (!currentId) return;
@@ -253,12 +293,12 @@ export function renderCornell(container, user, onBack) {
     statusEl.textContent = 'Ficha eliminada';
   };
 
-  // Exportar a PDF (abre diálogo de impresión limpio con @media print)
+  // Manejador para exportar a PDF utilizando el motor de impresión del navegador
   document.getElementById('cornell-export-pdf').onclick = () => {
     window.print();
   };
 
-  // Exportar a texto plano (.txt)
+  // Manejador para exportar la ficha completa a formato de texto plano (.txt)
   document.getElementById('cornell-export-txt').onclick = () => {
     const topic = topicInput.value.trim() || 'Ficha_Cornell';
     const content = [
@@ -288,6 +328,7 @@ export function renderCornell(container, user, onBack) {
     URL.revokeObjectURL(url);
   };
 
+  // Inicialización de la lista de fichas y navegación
   populateSavedSelect();
   document.getElementById('cornell-back').onclick = onBack;
 }
