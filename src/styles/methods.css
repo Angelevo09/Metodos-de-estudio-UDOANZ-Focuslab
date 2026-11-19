@@ -1,0 +1,667 @@
+/* Barra superior interna de cada método */
+.method-workspace {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.workspace-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.workspace-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.workspace-title-group h2 {
+  font-size: 1.5rem;
+  color: var(--color-900);
+}
+
+.badge-sessions {
+  background-color: var(--color-100);
+  color: var(--color-900);
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Layout Pomodoro: 2 columnas (Temporizador + Barra lateral de notas) */
+.pomodoro-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.timer-card,
+.notes-sidebar {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  box-shadow: 0 4px 14px rgba(46, 73, 87, 0.06);
+}
+
+/* Selector de modo (Estudio 25m / Descanso 5m) */
+.timer-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.mode-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background-color: var(--bg-page);
+  padding: 0.35rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 2rem;
+}
+
+.mode-tab {
+  padding: 0.5rem 1.1rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.mode-tab.active {
+  background-color: var(--color-800);
+  color: #ffffff;
+}
+
+/* Reloj gigante */
+.timer-display {
+  font-size: clamp(4.5rem, 9vw, 6.8rem);
+  font-weight: 700;
+  color: var(--color-900);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin: 1rem 0 0.5rem;
+}
+
+.timer-status-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-lg {
+  padding: 0.8rem 1.8rem;
+  font-size: 1rem;
+}
+
+.btn-secondary {
+  background-color: var(--color-100);
+  color: var(--color-900);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-200);
+}
+
+/* Barra lateral de notas */
+.notes-sidebar {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notes-header h3 {
+  font-size: 1.15rem;
+  color: var(--color-900);
+}
+
+.save-indicator {
+  font-size: 0.78rem;
+  color: var(--color-500);
+}
+
+.note-title-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-900);
+}
+
+.note-textarea {
+  width: 100%;
+  min-height: 240px;
+  padding: 0.85rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  resize: vertical;
+  background-color: #fcffff;
+}
+
+.note-title-input:focus,
+.note-textarea:focus {
+  outline: 2px solid var(--color-400);
+  border-color: transparent;
+}
+
+.notes-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* Lista de notas guardadas en bitácora */
+.saved-notes-box {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.saved-notes-box h4 {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.saved-notes-list {
+  list-style: none;
+  max-height: 160px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.saved-note-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-page);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.saved-note-info {
+  cursor: pointer;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-note-info strong {
+  color: var(--color-900);
+}
+
+.delete-note-btn {
+  background: none;
+  border: none;
+  color: #b03a2e;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0 0.4rem;
+}
+
+@media (max-width: 860px) {
+  .pomodoro-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   MÉTODO CORNELL
+   ========================================= */
+.cornell-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.2rem;
+  margin-bottom: 1.2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cornell-selector-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.cornell-select {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--color-300);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--color-900);
+  background-color: #ffffff;
+  min-width: 220px;
+}
+
+.cornell-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.btn-danger-outline {
+  background-color: transparent;
+  border: 1px solid #c0392b;
+  color: #c0392b;
+}
+
+.btn-danger-outline:hover {
+  background-color: #fdecea;
+}
+
+/* Hoja estructurada Cornell */
+.cornell-sheet {
+  background-color: #ffffff;
+  border: 2px solid var(--color-700);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgba(46, 73, 87, 0.08);
+  overflow: hidden;
+}
+
+/* Fila 1: Cabecera (Tema + Fecha) */
+.cornell-header {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  border-bottom: 2px solid var(--color-700);
+  background-color: var(--color-100);
+}
+
+.cornell-field-box {
+  padding: 0.85rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.cornell-header .cornell-field-box:first-child {
+  border-right: 2px solid var(--color-700);
+}
+
+.cornell-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-800);
+}
+
+.cornell-header input {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-900);
+  width: 100%;
+}
+
+.cornell-header input:focus {
+  outline: none;
+  border-bottom: 1px dashed var(--color-700);
+}
+
+/* Fila 2: Cuerpo dividido 30% (Ideas clave) / 70% (Notas) */
+.cornell-body {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  border-bottom: 2px solid var(--color-700);
+  min-height: 380px;
+}
+
+.cornell-cues-col {
+  border-right: 2px solid var(--color-700);
+  background-color: #f7fcfc;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cornell-notes-col {
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Fila 3: Resumen inferior */
+.cornell-summary {
+  padding: 1rem 1.2rem;
+  background-color: #fcffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cornell-textarea {
+  width: 100%;
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  resize: vertical;
+}
+
+.cornell-textarea:focus {
+  outline: none;
+}
+
+.cornell-cues-col .cornell-textarea {
+  min-height: 320px;
+  font-weight: 500;
+}
+
+.cornell-notes-col .cornell-textarea {
+  min-height: 320px;
+}
+
+.cornell-summary .cornell-textarea {
+  min-height: 100px;
+}
+
+@media (max-width: 768px) {
+  .cornell-header,
+  .cornell-body {
+    grid-template-columns: 1fr;
+  }
+  .cornell-header .cornell-field-box:first-child,
+  .cornell-cues-col {
+    border-right: none;
+    border-bottom: 2px solid var(--color-700);
+  }
+}
+
+/* Estilos limpios al exportar a PDF / Imprimir */
+@media print {
+  .navbar,
+  .workspace-topbar,
+  .cornell-toolbar {
+    display: none !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+  }
+
+  .method-workspace {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .cornell-sheet {
+    box-shadow: none;
+    border: 2px solid #2e4957;
+  }
+
+  .cornell-header {
+    grid-template-columns: 1fr 180px !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cornell-body {
+    grid-template-columns: 30% 70% !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cornell-textarea {
+    resize: none;
+  }
+}
+
+/* =========================================
+   MÉTODO DOODLING (VISOR + LIENZO)
+   ========================================= */
+.doodling-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  height: calc(100vh - 175px);
+  min-height: 540px;
+}
+
+.doc-viewer-panel,
+.canvas-panel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(46, 73, 87, 0.06);
+}
+
+.panel-toolbar {
+  background-color: var(--color-100);
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.file-upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: var(--btn-primary);
+  color: var(--text-light);
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.file-upload-label:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+.file-name-badge {
+  font-size: 0.82rem;
+  color: var(--color-800);
+  font-weight: 600;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Área de visualización del PDF o DOCX */
+.doc-viewer-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: #f8fcfc;
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-placeholder {
+  margin: auto;
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+  max-width: 320px;
+}
+
+.doc-placeholder span {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.docx-render-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.8rem 2rem;
+  background-color: #ffffff;
+  color: #1e272e;
+  line-height: 1.65;
+  font-size: 0.96rem;
+}
+
+.docx-render-area h1,
+.docx-render-area h2,
+.docx-render-area h3 {
+  color: var(--color-900);
+  margin: 1rem 0 0.5rem;
+}
+
+.docx-render-area p {
+  margin-bottom: 0.8rem;
+}
+
+.docx-render-area table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.docx-render-area td,
+.docx-render-area th {
+  border: 1px solid var(--color-300);
+  padding: 0.45rem;
+}
+
+/* Herramientas del Lienzo de Dibujo */
+.doodle-tools-left,
+.doodle-tools-right {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.color-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--color-400);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.color-swatch.active {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px var(--color-900);
+}
+
+.color-picker-input {
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.brush-slider {
+  width: 75px;
+  accent-color: var(--color-800);
+}
+
+.tool-btn {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-300);
+  background-color: #ffffff;
+  color: var(--color-900);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tool-btn.active {
+  background-color: var(--color-800);
+  color: #ffffff;
+  border-color: var(--color-800);
+}
+
+.canvas-wrapper {
+  flex: 1;
+  position: relative;
+  background-color: #ffffff;
+  cursor: crosshair;
+  touch-action: none; /* Evita scroll al dibujar con pantalla táctil o lápiz */
+}
+
+#doodle-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .doodling-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .doc-viewer-panel,
+  .canvas-panel {
+    height: 480px;
+  }
+}

@@ -1,0 +1,29 @@
+:root {
+  /* Paleta Base (Oscuros a Claros) */
+  --color-900: #2e4957;
+  --color-800: #375261;
+  --color-700: #415c6b;
+  --color-600: #4a6675;
+  --color-500: #54707f;
+  --color-400: #688391;
+  --color-300: #87a1ab;
+  --color-200: #a7bfc7;
+  --color-100: #c8dfe2;
+  --color-50:  #eaffff;
+
+  /* Variables Semánticas */
+  --bg-page: var(--color-50);
+  --bg-navbar: var(--color-900);
+  --bg-card: #ffffff;
+  --bg-card-accent: var(--color-100);
+  --text-main: var(--color-900);
+  --text-muted: var(--color-500);
+  --text-light: var(--color-50);
+  --btn-primary: var(--color-700);
+  --btn-primary-hover: var(--color-800);
+  --border-subtle: var(--color-200);
+
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
